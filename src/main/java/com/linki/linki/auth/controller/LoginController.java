@@ -1,6 +1,7 @@
 package com.linki.linki.auth.controller;
 
 import com.linki.linki.auth.dto.LoginRequest;
+import com.linki.linki.auth.dto.LoginResponse;
 import com.linki.linki.auth.service.LoginService;
 import com.linki.linki.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,8 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createAccessToken(@RequestBody @Valid LoginRequest loginRequest){
+    public ResponseEntity<LoginResponse> createAccessToken(@RequestBody @Valid LoginRequest loginRequest){
         String token = loginService.createAccessToken(loginRequest.getLoginID(),loginRequest.getPassword());
-        return ResponseEntity.ok().body(token);
+        return ResponseEntity.ok().body(new LoginResponse(token));
     }
 }
