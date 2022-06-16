@@ -27,7 +27,8 @@ public class MemberService {
     }
 
     public Member getMemberIfExist(String loginID, String password) {
-        return memberRepository.findByLoginIDAndPasswordHash(loginID,passwordEncoder.encode(password))
+        return memberRepository.findByLoginID(loginID)
+                .filter(member -> passwordEncoder.matches(password, member.getPasswordHash()))
                 .orElseThrow(() -> new WrongPasswordException("아이디와 비밀번호를 확인해주세요."));
 
     }
