@@ -15,6 +15,6 @@ public class LoginService {
 
     public String createAccessToken(String loginID, String password) {
         Member member = memberService.getMemberIfExist(loginID,password);
-        return jwtTokenProvider.createJwtToken(member);
+        return jwtTokenProvider.createToken(member);
     }
 }
