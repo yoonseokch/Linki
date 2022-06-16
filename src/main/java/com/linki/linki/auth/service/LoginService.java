@@ -13,8 +13,8 @@ public class LoginService {
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public void createAccessToken(String loginID, String password) {
+    public String createAccessToken(String loginID, String password) {
         Member member = memberService.getMemberIfExist(loginID,password);
-        String token = jwtTokenProvider.createJwtToken(member);
+        return jwtTokenProvider.createJwtToken(member);
     }
 }

@@ -21,8 +21,8 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> createAccessToken(@RequestBody @Valid LoginRequest loginRequest){
-        loginService.createAccessToken(loginRequest.getLoginID(),loginRequest.getPassword());
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> createAccessToken(@RequestBody @Valid LoginRequest loginRequest){
+        String token = loginService.createAccessToken(loginRequest.getLoginID(),loginRequest.getPassword());
+        return ResponseEntity.ok().body(token);
     }
 }
