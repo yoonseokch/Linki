@@ -33,6 +33,7 @@ public class Member {
     private Member(){
 
     }
+
     @Builder
     public Member(Long memberID, String loginID, String passwordHash, String phoneNumber, String name, MemberRole memberRole) {
         this.memberID = memberID;

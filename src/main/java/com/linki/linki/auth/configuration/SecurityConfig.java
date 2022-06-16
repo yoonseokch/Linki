@@ -3,6 +3,7 @@ package com.linki.linki.auth.configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +24,9 @@ public class SecurityConfig {
         return http
                 .httpBasic().disable() // api 서버기 때문에 로그인창이 필요 없음
                 .csrf().disable() // csrf 방어 필요 없음
+                .sessionManagement() // JWT를 사용하기에 세션 필요없음
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .authorizeRequests()
                 .anyRequest().permitAll()
 //                                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
