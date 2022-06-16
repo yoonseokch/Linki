@@ -30,6 +30,10 @@ public class Member {
     @Column(name = "member_role" , nullable = false, columnDefinition = "varchar(20)")
     private MemberRole memberRole;
 
+    private Member(){
+
+    }
+
     @Builder
     public Member(Long memberID, String loginID, String passwordHash, String phoneNumber, String name, MemberRole memberRole) {
         this.memberID = memberID;

@@ -1,13 +1,16 @@
 package com.linki.linki.member.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.linki.linki.member.dto.validation.Password;
 import com.linki.linki.member.dto.validation.Phone;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 
 @Getter
+@NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 public class MemberRegisterRequest {
 
