@@ -11,6 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
+    // TODO 멤버 서비스에 password encoder를 놓는게 합당한가 아니면 Spring security측에 놓는게 합당한가
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
