@@ -4,11 +4,12 @@ import com.linki.linki.auth.exception.UnauthenticatedException;
 import com.linki.linki.member.domain.Member;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.security.core.AuthenticationException;
 
+import java.util.Optional;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -45,20 +46,21 @@ public class JwtTokenProvider {
 
     }
 
-    public String getTokenFromRequest(ServletRequest request) {
+    public Optional<String> getHeaderIfExist(ServletRequest request) {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String header = httpRequest.getHeader(AUTH_HEADER_NAME);
-        if (!isValidFormat(header)){
-            throw new UnauthenticatedException("올바른 인증 방식이 아닙니다");
-        }
-        return tokenFromHeader(header);
+        return Optional.ofNullable(header);
     }
 
-    public String getSubject(String token) {
+    public String getSubjectFromHeader(String header) {
+        if (!isValidHeader(header)){
+            throw new UnauthenticatedException("인증 형식이 올바르지 않습니다.");
+        }
+        String token = tokenFromHeader(header);
         try {
             return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
         } catch (JwtException | IllegalArgumentException e) {
-            throw new UnauthenticatedException("Invalid token\n" + e.getMessage());
+            throw new UnauthenticatedException(e.getMessage());
         }
     }
 
@@ -66,7 +68,7 @@ public class JwtTokenProvider {
         return header.replace(TOKEN_PREFIX,"");
     }
 
-    private boolean isValidFormat(String token) {
-        return !StringUtils.hasText(token) || token.startsWith(TOKEN_PREFIX);
+    private boolean isValidHeader(String token) {
+        return StringUtils.hasText(token) && token.startsWith(TOKEN_PREFIX);
     }
 }

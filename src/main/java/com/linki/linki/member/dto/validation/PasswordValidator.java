@@ -1,5 +1,7 @@
 package com.linki.linki.member.dto.validation;
 
+import org.springframework.util.StringUtils;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.regex.Matcher;
@@ -9,6 +11,10 @@ public class PasswordValidator implements ConstraintValidator<Password,String> {
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
+
+        if (!StringUtils.hasText(value)){
+            return false;
+        }
         // TODO 패스워드 패턴 변경시 변경필요
         // TODO 패스워드 체크할 건지 비지니스 로직 검증 필요
         Pattern pattern = Pattern.compile("[a-zA-Z_0-9]{10,}");

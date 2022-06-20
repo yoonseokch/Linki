@@ -7,9 +7,11 @@ import lombok.RequiredArgsConstructor;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -27,25 +29,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        Optional<String> header = jwtTokenProvider.getHeaderIfExist(request);
         try {
-            String token = jwtTokenProvider.getTokenFromRequest(request);
-            Optional.ofNullable(token)
-                    .map(jwtTokenProvider::getSubject)
+            header.map(jwtTokenProvider::getSubjectFromHeader)
                     .map(userDetailsService::loadUserByUsername)
                     .map(userDetails -> new UsernamePasswordAuthenticationToken(userDetails,
-                            "",
+                            userDetails.getPassword(),
                             userDetails.getAuthorities()))
                     .ifPresent(authentication -> {
-                        SecurityContext newContext = SecurityContextHolder.createEmptyContext();
-                        newContext.setAuthentication(authentication);
+                        SecurityContext context = SecurityContextHolder.createEmptyContext();
+                        context.setAuthentication(authentication);
+                        SecurityContextHolder.setContext(context);
                     });
-
+            filterChain.doFilter(request, response);
         } catch (UnauthenticatedException e){
             writeUnauthenticatedResponse(response,e);
         }
     }
 
-    private void writeUnauthenticatedResponse(HttpServletResponse response,UnauthenticatedException e) throws IOException {
+    private void writeUnauthenticatedResponse(HttpServletResponse response, Exception e) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");

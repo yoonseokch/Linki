@@ -15,7 +15,7 @@ public class MemberDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userID) throws UsernameNotFoundException {
-        return memberRepository.findById(userID)
+        return memberRepository.findByMemberID(Long.valueOf(userID))
                 .orElseThrow(() -> new UsernameNotFoundException(
                         String.format("Member %s does not exist", userID)));
     }
