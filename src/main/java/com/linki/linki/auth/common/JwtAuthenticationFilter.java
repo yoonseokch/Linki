@@ -43,11 +43,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     });
             filterChain.doFilter(request, response);
         } catch (UnauthenticatedException e){
-            writeUnauthenticatedResponse(response,e);
+            sendUnauthenticatedResponse(response,e);
         }
     }
 
-    private void writeUnauthenticatedResponse(HttpServletResponse response, Exception e) throws IOException {
+    private void sendUnauthenticatedResponse(HttpServletResponse response, Exception e) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
