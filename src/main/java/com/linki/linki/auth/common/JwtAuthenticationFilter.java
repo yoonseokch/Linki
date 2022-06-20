@@ -1,34 +1,56 @@
 package com.linki.linki.auth.common;
 
-import com.linki.linki.auth.dto.UnauthenticatedException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.linki.linki.auth.dto.UnauthenticatedResponse;
+import com.linki.linki.auth.exception.UnauthenticatedException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.GenericFilterBean;
+import java.util.Optional;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserDetailsService userDetailsService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            System.out.println("안녕");
             String token = jwtTokenProvider.getTokenFromRequest(request);
-            filterChain.doFilter(request, response);
+            Optional.ofNullable(token)
+                    .map(jwtTokenProvider::getSubject)
+                    .map(userDetailsService::loadUserByUsername)
+                    .map(userDetails -> new UsernamePasswordAuthenticationToken(userDetails,
+                            "",
+                            userDetails.getAuthorities()))
+                    .ifPresent(authentication -> {
+                        SecurityContext newContext = SecurityContextHolder.createEmptyContext();
+                        newContext.setAuthentication(authentication);
+                    });
 
         } catch (UnauthenticatedException e){
-            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, Collections.singletonMap("message", e.getMessage()).toString());
+            writeUnauthenticatedResponse(response,e);
         }
+    }
+
+    private void writeUnauthenticatedResponse(HttpServletResponse response,UnauthenticatedException e) throws IOException {
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
+        UnauthenticatedResponse data = new UnauthenticatedResponse(e.getMessage());
+        String body = objectMapper.writeValueAsString(data);
+        response.getWriter().write(body);
     }
 }

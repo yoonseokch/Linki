@@ -1,6 +1,6 @@
 package com.linki.linki.common.exception;
 
-import com.linki.linki.auth.dto.UnauthenticatedException;
+import com.linki.linki.auth.exception.UnauthenticatedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
