@@ -12,7 +12,7 @@ public class MemberCreateValues {
     private final String passwordCheck;
     private final String phoneNumber;
 
-    public MemberCreateValues(MemberRegisterRequest request){
+    public MemberCreateValues(MemberRegisterRequest request) {
         this.name = request.getName();
         this.loginID = request.getLoginID();
         this.password = request.getPassword();

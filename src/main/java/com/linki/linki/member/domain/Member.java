@@ -8,8 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity(name = "Member")
@@ -34,8 +32,22 @@ public class Member implements UserDetails {
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "member_role" , nullable = false, columnDefinition = "varchar(20)")
+    @Column(name = "member_role", nullable = false, columnDefinition = "varchar(20)")
     private MemberRole memberRole;
+
+    private Member() {
+
+    }
+
+    @Builder
+    public Member(Long memberID, String loginID, String passwordHash, String phoneNumber, String name, MemberRole memberRole) {
+        this.memberID = memberID;
+        this.loginID = loginID;
+        this.passwordHash = passwordHash;
+        this.phoneNumber = phoneNumber;
+        this.name = name;
+        this.memberRole = memberRole;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -71,20 +83,6 @@ public class Member implements UserDetails {
     @Override
     public boolean isEnabled() {
         return false;
-    }
-
-    private Member(){
-
-    }
-
-    @Builder
-    public Member(Long memberID, String loginID, String passwordHash, String phoneNumber, String name, MemberRole memberRole) {
-        this.memberID = memberID;
-        this.loginID = loginID;
-        this.passwordHash = passwordHash;
-        this.phoneNumber = phoneNumber;
-        this.name = name;
-        this.memberRole = memberRole;
     }
 }
 

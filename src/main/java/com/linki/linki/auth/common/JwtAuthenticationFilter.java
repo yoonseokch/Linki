@@ -4,14 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.linki.linki.auth.dto.UnauthenticatedResponse;
 import com.linki.linki.auth.exception.UnauthenticatedException;
 import lombok.RequiredArgsConstructor;
-import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -19,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -42,8 +40,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         SecurityContextHolder.setContext(context);
                     });
             filterChain.doFilter(request, response);
-        } catch (UnauthenticatedException e){
-            sendUnauthenticatedResponse(response,e);
+        } catch (UnauthenticatedException e) {
+            sendUnauthenticatedResponse(response, e);
         }
     }
 

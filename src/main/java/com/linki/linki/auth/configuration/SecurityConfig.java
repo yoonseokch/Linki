@@ -2,12 +2,10 @@ package com.linki.linki.auth.configuration;
 
 import com.linki.linki.auth.common.JwtAuthenticationFilter;
 import com.linki.linki.auth.common.JwtTokenProvider;
-import com.linki.linki.member.domain.MemberRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -27,6 +25,7 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService service;
+
     // TODO 멤버 서비스에 password encoder를 놓는게 합당한가 아니면 Spring security측에 놓는게 합당한가
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -47,7 +46,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider,service), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, service), UsernamePasswordAuthenticationFilter.class)
                 .build();
 
     }

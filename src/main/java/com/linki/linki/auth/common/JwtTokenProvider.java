@@ -7,14 +7,13 @@ import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.security.core.AuthenticationException;
 
-import java.util.Optional;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.Optional;
 
-import static io.jsonwebtoken.SignatureAlgorithm.*;
+import static io.jsonwebtoken.SignatureAlgorithm.HS512;
 
 @Component
 public class JwtTokenProvider {
@@ -53,7 +52,7 @@ public class JwtTokenProvider {
     }
 
     public String getSubjectFromHeader(String header) {
-        if (!isValidHeader(header)){
+        if (!isValidHeader(header)) {
             throw new UnauthenticatedException("인증 형식이 올바르지 않습니다.");
         }
         String token = tokenFromHeader(header);
@@ -65,7 +64,7 @@ public class JwtTokenProvider {
     }
 
     private String tokenFromHeader(String header) {
-        return header.replace(TOKEN_PREFIX,"");
+        return header.replace(TOKEN_PREFIX, "");
     }
 
     private boolean isValidHeader(String token) {

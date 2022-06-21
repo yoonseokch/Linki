@@ -16,7 +16,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void addMember(MemberCreateValues values){
+    public void addMember(MemberCreateValues values) {
         memberRepository.save(Member.builder()
                 .loginID(values.getLoginID())
                 .passwordHash(passwordEncoder.encode(values.getPassword())) // need to be hashed
