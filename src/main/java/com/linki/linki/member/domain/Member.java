@@ -35,7 +35,7 @@ public class Member implements UserDetails {
     @Column(name = "member_role", nullable = false, columnDefinition = "varchar(20)")
     private MemberRole memberRole;
 
-    private Member() {
+    protected Member() {
 
     }
 
