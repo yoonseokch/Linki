@@ -1,4 +1,4 @@
-package com.linki.linki.common.exception;
+package com.linki.linki.common.exception.handler;
 
 import com.linki.linki.member.exception.WrongPasswordException;
 import org.springframework.http.HttpStatus;
