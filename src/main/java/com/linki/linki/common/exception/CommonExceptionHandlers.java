@@ -19,7 +19,7 @@ public class CommonExceptionHandlers {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(WrongPasswordException.class)
     @ResponseBody
-    public Map<String, String> unauthorizedHandler(Exception e) {
+    public Map<String, String> wrongPasswordHandler(Exception e) {
         return Collections.singletonMap("message", "잘못된 비밀번호입니다.");
     }
 
