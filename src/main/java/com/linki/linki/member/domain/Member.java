@@ -25,7 +25,7 @@ public class Member implements UserDetails {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @Column(name = "phone_number", nullable = false, columnDefinition = "varchar(15)")
+    @Column(name = "phone_number", unique = true, nullable = false, columnDefinition = "varchar(15)")
     private String phoneNumber;
 
     @Column(name = "name", nullable = false, columnDefinition = "varchar(40)")
