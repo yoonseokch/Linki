@@ -16,7 +16,9 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
-
+node_modules/
+package-lock.json
+*.DS_Store
 ### IntelliJ IDEA ###
 .idea
 *.iws

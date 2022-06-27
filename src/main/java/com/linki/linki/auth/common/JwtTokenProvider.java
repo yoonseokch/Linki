@@ -1,23 +1,26 @@
 package com.linki.linki.auth.common;
 
-import com.linki.linki.auth.dto.UnauthenticatedException;
+import com.linki.linki.auth.exception.UnauthenticatedException;
 import com.linki.linki.member.domain.Member;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.Column;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.Objects;
+import java.util.Optional;
+
+import static io.jsonwebtoken.SignatureAlgorithm.HS512;
 
 @Component
 public class JwtTokenProvider {
+
+    private static final String TOKEN_PREFIX = "Bearer ";
+    private static final String AUTH_HEADER_NAME = "Authorization";
+    private static final String ISSUER_NAME = "LINKY";
 
     private final String secretKey;
     private final long expireTimeInMS;
@@ -34,26 +37,37 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(member.getMemberID().toString()) // 사용자
-                .setIssuer("Linky")
+                .setIssuer(ISSUER_NAME)
                 .setIssuedAt(now) // 현재 시간 기반으로 생성
                 .setExpiration(expiryDate) // 만료 시간 세팅
-                .signWith(SignatureAlgorithm.HS512, secretKey) // 사용할 암호화 알고리즘, signature에 들어갈 secret 값 세팅
+                .signWith(HS512, secretKey) // 사용할 암호화 알고리즘, signature에 들어갈 secret 값 세팅
                 .compact();
 
     }
 
-    public String getTokenFromRequest(ServletRequest request) {
+    public Optional<String> getHeaderIfExist(ServletRequest request) {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        String header = httpRequest.getHeader("Authorization");
-        System.out.println(header);
-        if (isInvalidHeader(header)){
-            throw new UnauthenticatedException("올바른 인증 방식이 아닙니다");
-        }
-        return header;
+        String header = httpRequest.getHeader(AUTH_HEADER_NAME);
+        return Optional.ofNullable(header);
     }
 
-    private boolean isInvalidHeader(String token) {
+    public String getSubjectFromHeader(String header) {
+        if (!isValidHeader(header)) {
+            throw new UnauthenticatedException("인증 형식이 올바르지 않습니다.");
+        }
+        String token = tokenFromHeader(header);
+        try {
+            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new UnauthenticatedException(e.getMessage());
+        }
+    }
 
-        return !StringUtils.hasText(token) || token.equals("Bearer");
+    private String tokenFromHeader(String header) {
+        return header.replace(TOKEN_PREFIX, "");
+    }
+
+    private boolean isValidHeader(String token) {
+        return StringUtils.hasText(token) && token.startsWith(TOKEN_PREFIX);
     }
 }
